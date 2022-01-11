@@ -1,37 +1,37 @@
-# https://thingsboard.io/docs/user-guide/install/pe/docker/
 services:
   thingsboard:
-    image: "store/thingsboard/tb-pe:3.3.1PE"
+    # Use Community Edition for development purposes
+    # https://thingsboard.io/docs/user-guide/install/docker/
+    image: thingsboard/tb-postgres:3.3.1
     ports:
       - "8080:8080"
       #- "1883:1883" # MQTT port
       #- "7070:7070" # Edge RPC port
     environment:
       # https://thingsboard.io/docs/pe/user-guide/install/config/
-      HTTP_BIND_PORT: 8080
-      TB_QUEUE_TYPE: in-memory # rabbitmq
-      TB_LICENSE_SECRET_FILE: /run/secrets/thingsboard_license
       TB_LICENSE_INSTANCE_DATA_FILE: /data/license.data
+      HTTP_BIND_PORT: 8080
+      TB_QUEUE_TYPE: rabbitmq # in-memory
+      TB_QUEUE_RABBIT_MQ_USERNAME: thingsboard
+      TB_QUEUE_RABBIT_MQ_HOST: queue
+      TB_QUEUE_RABBIT_MQ_PORT: 5672
     env_file:
       - ./secrets/thingsboard_secrets.env
     #volumes:
       #- ~/.mytbpe-data:/data
       #- ~/.mytbpe-logs:/var/log/thingsboard
-    secrets:
-      - postgres
-      - thingsboard_license
     restart: always
 
   # System database
-  postgres:
-    image: "postgres:12"
-    environment:
-      POSTGRES_DB: thingsboard
-      POSTGRES_USER: thingsboard
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres
-    secrets:
-      - postgres
-    restart: always
+#  postgres:
+#    image: "postgres:12"
+#    environment:
+#      POSTGRES_DB: thingsboard
+#      POSTGRES_USER: thingsboard
+#      POSTGRES_PASSWORD_FILE: /run/secrets/postgres
+#    secrets:
+#      - postgres
+#    restart: always
 
   # Message broker
   queue:
@@ -41,7 +41,8 @@ services:
     ports:
       - "15672:15672" # Management console
     environment:
-      - RABBITMQ_DEFAULT_USER=thingsboard
+      RABBITMQ_NODE_PORT: 5672
+      RABBITMQ_DEFAULT_USER: thingsboard
     env_file:
       - ./secrets/rabbitmq_secrets.env
 
