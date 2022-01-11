@@ -11,7 +11,8 @@ services:
       # https://thingsboard.io/docs/pe/user-guide/install/config/
       TB_LICENSE_INSTANCE_DATA_FILE: /data/license.data
       HTTP_BIND_PORT: 8080
-      TB_QUEUE_TYPE: rabbitmq # in-memory
+      TB_QUEUE_TYPE: rabbitmq
+      # RabbitMQ connection
       TB_QUEUE_RABBIT_MQ_USERNAME: thingsboard
       TB_QUEUE_RABBIT_MQ_HOST: queue
       TB_QUEUE_RABBIT_MQ_PORT: 5672
